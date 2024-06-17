@@ -7,7 +7,7 @@ const FirstNavbar = () => {
         <li>locate order |</li>
         <li>my acount |</li>
         <li> loved items |</li>
-        <li>Productt |</li>
+        <li>Product |</li>
       </ul>
     </nav>
   );
