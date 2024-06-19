@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore"; // Correct imports for Firestore
 import { db } from "./firebase_setup/firebase"; // Ensure this path is correct
+import CarouselPage from "./CarouselPage";
 
 function App() {
   const [data, setData] = useState([]);
@@ -17,7 +18,7 @@ function App() {
       querySnapshot.forEach((doc) => {
         dataList.push({ id: doc.id, ...doc.data() }); // Assuming you want to keep document IDs
       });
-      console.log(dataList)
+      console.log(dataList);
       setData(dataList);
     };
     fetchData();
@@ -29,6 +30,7 @@ function App() {
     <>
       <FirstNavbar />
       <main className="content">
+        <CarouselPage />
         <h2>Data from Firestore:</h2>
         <ul>
           {data.map((item) => (
