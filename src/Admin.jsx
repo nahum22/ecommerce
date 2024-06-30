@@ -2,10 +2,47 @@ import React, { useEffect, useState } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import "firebase/compat/storage";
-import "firebase/compat/auth"; // Ensure auth is imported
+import "firebase/compat/auth";
 import "./firebase_setup/firebase.js";
 import { useGlobalContext } from "./Context";
-import "./styles/admin.css";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  TextField,
+  Container,
+  Grid,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton,
+  createTheme,
+  ThemeProvider,
+  CssBaseline,
+} from "@mui/material";
+import { Edit, Delete, AddPhotoAlternate } from "@mui/icons-material";
+
+// Create a custom theme with the primary color set to #feab00, dark grey background, and white text
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#FAC898",
+    },
+    background: {
+      default: "#303030", // Dark grey background
+      paper: "#424242", // Slightly lighter grey for paper components
+    },
+    text: {
+      primary: "#ffffff", // White text
+    },
+  },
+  typography: {
+    fontFamily: "'Lato', sans-serif", // Set the custom font
+  },
+});
 
 const Admin = () => {
   const { handleDelete, handleUpdate } = useGlobalContext();
@@ -13,6 +50,7 @@ const Admin = () => {
   const [categoryName, setCategoryName] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(""); // Store existing image URL
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
@@ -73,7 +111,7 @@ const Admin = () => {
 
     try {
       const dbRef = firebase.database().ref("products");
-      let imageUrl = "";
+      let imageUrl = existingImageUrl; // Use existing image URL by default
 
       if (image) {
         const storageRef = firebase.storage().ref();
@@ -105,6 +143,7 @@ const Admin = () => {
       setCategoryName("");
       setName("");
       setImage(null);
+      setExistingImageUrl(""); // Reset existing image URL
       setIsEditing(false);
       setEditProductId(null);
     } catch (error) {
@@ -117,6 +156,7 @@ const Admin = () => {
     setCategoryId(product.categoryId);
     setCategoryName(product.categoryName);
     setName(product.name);
+    setExistingImageUrl(product.imageUrl); // Set existing image URL
     setEditProductId(product.id);
     setIsEditing(true);
   };
@@ -136,87 +176,160 @@ const Admin = () => {
   };
 
   return (
-    <>
-      <div className="adminInterface">
-        <div>Admin</div>
-        <div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
+            Admin
+          </Typography>
           {user ? (
             <>
-              <p>Welcome, {user.displayName}</p>
-              <button onClick={handleSignOut}>Sign Out</button>
+              <Typography variant="h6" style={{ marginRight: "20px" }}>
+                Welcome, {user.displayName}
+              </Typography>
+              <Button color="inherit" onClick={handleSignOut}>
+                Sign Out
+              </Button>
             </>
           ) : (
-            <button onClick={handleGoogleSignIn}>Sign In with Google</button>
+            <Button color="inherit" onClick={handleGoogleSignIn}>
+              Sign In with Google
+            </Button>
           )}
-        </div>
-        <div>{isEditing ? "Edit Product" : "Add New Product"}</div>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="categoryId">Category ID:</label>
-          <input
-            type="text"
-            id="categoryId"
-            name="categoryId"
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-          />
-          <br />
-          <br />
-          <label htmlFor="categoryName">Category Name:</label>
-          <input
-            type="text"
-            id="categoryName"
-            name="categoryName"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-          <br />
-          <br />
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <br />
-          <label htmlFor="image">Image:</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            onChange={handleImageChange}
-          />
-          <br />
-          <button type="submit">{isEditing ? "Update" : "Submit"}</button>
+        </Toolbar>
+      </AppBar>
+      <Container>
+        <Typography variant="h4" style={{ margin: "20px 0" }}>
+          {isEditing ? "Edit Product" : "Add New Product"}
+        </Typography>
+        <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Category ID"
+                id="categoryId"
+                name="categoryId"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                InputProps={{
+                  style: { color: "#ffffff" },
+                }}
+                InputLabelProps={{
+                  style: { color: "#ffffff" },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Category Name"
+                id="categoryName"
+                name="categoryName"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                InputProps={{
+                  style: { color: "#ffffff" },
+                }}
+                InputLabelProps={{
+                  style: { color: "#ffffff" },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Name"
+                id="name"
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                InputProps={{
+                  style: { color: "#ffffff" },
+                }}
+                InputLabelProps={{
+                  style: { color: "#ffffff" },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<AddPhotoAlternate />}
+                color="primary"
+              >
+                Upload Image
+                <input
+                  type="file"
+                  hidden
+                  id="image"
+                  name="image"
+                  onChange={handleImageChange}
+                />
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
+                {isEditing ? "Update" : "Submit"}
+              </Button>
+            </Grid>
+          </Grid>
         </form>
-        <div>
-          <h2>Products List</h2>
-          <ul>
+        <Paper style={{ backgroundColor: "#424242", color: "#ffffff" }}>
+          <Typography variant="h5" style={{ padding: "20px 0" }}>
+            Products List
+          </Typography>
+          <List>
             {products.map((product) => (
-              <li key={product.id}>
-                Category ID: {product.categoryId}, Category Name:{" "}
-                {product.categoryName}, Name: {product.name}
+              <ListItem key={product.id}>
+                <ListItemText
+                  primary={`Category ID: ${product.categoryId}, Category Name: ${product.categoryName}, Name: ${product.name}`}
+                  primaryTypographyProps={{ style: { color: "#ffffff" } }}
+                />
                 {product.imageUrl && (
                   <div>
                     <img
                       src={product.imageUrl}
                       alt={product.name}
                       width="100"
+                      style={{ marginRight: "10px" }}
                     />
-                    <button onClick={() => handleImageDelete(product)}>
-                      Delete Image
-                    </button>
                   </div>
                 )}
-                <button onClick={() => handleDelete(product.id)}>Delete</button>
-                <button onClick={() => handleEdit(product)}>Edit</button>
-              </li>
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    aria-label="edit"
+                    onClick={() => handleEdit(product)}
+                    color="primary"
+                  >
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleDelete(product.id)}
+                    color="primary"
+                  >
+                    <Delete />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
             ))}
-          </ul>
-        </div>
-      </div>
-    </>
+          </List>
+        </Paper>
+      </Container>
+    </ThemeProvider>
   );
 };
 
