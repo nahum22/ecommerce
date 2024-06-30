@@ -1,6 +1,9 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import firebase from "firebase/compat/app";
+import "firebase/compat/database"; // Ensure the database is imported
+
 const url = "https://6666aa30a2f8516ff7a44b9d.mockapi.io/Products";
 
 const AppContext = createContext();
@@ -11,30 +14,6 @@ export const AppProvider = ({ children }) => {
   const [ProductsData, setProductsData] = useState([]);
 
   // Fetching the Products from mock API
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(url);
-      setProductsData(response.data);
-    } catch (error) {
-      setError(error.message);
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   // Adding Product to API
   const handleAddProduct = async (Product) => {
@@ -61,53 +40,32 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Update Product to API
-  const handleUpdateProduct = async (Product) => {
-    setLoading(true);
+  const handleUpdate = async (itemId, updatedValues) => {
     try {
-      await axios.put(`${url}/${Product.id}`, Product);
-      await fetchProducts();
-      toast.success("Successfully updated!", {
-        position: "top-center",
-      });
+      const dbRef = firebase.database().ref("products");
+      const itemRef = dbRef.child(itemId);
+
+      await itemRef.update(updatedValues);
+      console.log("Item updated successfully");
+      // Optionally, refresh the products list after updating
+      fetchProducts();
     } catch (error) {
-      setError(error.message);
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } finally {
-      setLoading(false);
+      console.error("Error updating item:", error);
     }
   };
 
   // Delete Product to API
-  const handleDeleteProduct = async (Product) => {
-    setLoading(true);
+  const handleDelete = async (itemId) => {
     try {
-      await axios.delete(`${url}/${Product.id}`);
-      await fetchProducts();
-      toast.success("Successfully deleated Product!", {
-        position: "top-center",
-      });
+      const dbRef = firebase.database().ref("products");
+      const itemRef = dbRef.child(itemId);
+
+      await itemRef.remove();
+      console.log("Item removed successfully");
+      // Optionally, refresh the products list after deletion
+      //  fetchProducts();
     } catch (error) {
-      setError(error.message);
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    } finally {
-      setLoading(false);
+      console.error("Error removing item:", error);
     }
   };
 
@@ -128,16 +86,6 @@ export const AppProvider = ({ children }) => {
     handleAddProduct(newProduct);
   };
 
-  // Updating Product, need to check
-  const updateProduct = (Product) => {
-    updateProduct(Product);
-  };
-
-  // Remove Product
-  const removeProduct = (Product) => {
-    handleDeleteProduct(Product);
-  };
-
   return (
     <AppContext.Provider
       value={{
@@ -145,11 +93,9 @@ export const AppProvider = ({ children }) => {
         error,
         loading,
         addProduct,
-        updateProduct,
-        removeProduct,
         handleAddProduct,
-        handleUpdateProduct,
-        handleDeleteProduct,
+        handleUpdate,
+        handleDelete,
       }}
     >
       {children}

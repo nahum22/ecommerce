@@ -1,49 +1,28 @@
 import "./App.css";
 import FirstNavbar from "./FirstNavbar";
 import Footer from "./Footer";
-
-import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import CarouselPage from "./CarouselPage";
+import React from "react"; // Removed useEffect and useState since they're not used
 import { collection, getDocs } from "firebase/firestore"; // Correct imports for Firestore
 import { db } from "./firebase_setup/firebase"; // Ensure this path is correct
-import CarouselPage from "./CarouselPage";
+
+import LandingPage from "./LandingPage";
+import Admin from "./Admin";
 
 function App() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "products")); // Replace "your_collection" with your actual collection name
-
-      const dataList = [];
-      querySnapshot.forEach((doc) => {
-        dataList.push({ id: doc.id, ...doc.data() }); // Assuming you want to keep document IDs
-      });
-      console.log(dataList);
-      setData(dataList);
-    };
-    fetchData();
-  }, []);
-
-  // Log data after setting it to see the fetched data
-
   return (
-    <>
-      <FirstNavbar />
-      <main className="content">
-        <CarouselPage />
-        <h2>Data from Firestore:</h2>
-        <ul>
-          {data.map((item) => (
-            <li key={item.id}>
-              {/* Display item properties here */}
-              ID: {item.id}, Name: {item.name}{" "}
-              {/* Replace 'name' with actual property names */}
-            </li>
-          ))}
-        </ul>
-      </main>
-      <Footer />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Admin />} />
+        {/* 
+          <Route path="/DisplayMacbooks" element={<DisplayMacbooks />} />
+          <Route path="/Update/:MacbookId" element={<Update />} />
+          <Route path="/addMacbook" element={<AddMacbook />} />
+        */}
+        <></>
+      </Routes>
+    </Router>
   );
 }
 

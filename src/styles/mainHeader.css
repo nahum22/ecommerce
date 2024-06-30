@@ -7,7 +7,7 @@ body {
   justify-content: center;
   background-color: rgb(193, 193, 193);
   color: white;
-  text-shadow: black 2px 2px 10px;
+  text-shadow: black 2px 2px 15px;
   font-size: 1.5rem;
   border-bottom: 2px solid black;
 }
@@ -37,9 +37,6 @@ body {
   .mainHeader li:hover {
     color: black;
     text-shadow: white 2px 2px 10px;
-    font-size:13px;
+    font-size: 13px;
   }
-
-
-
 }

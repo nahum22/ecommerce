@@ -14,23 +14,23 @@ const Footer = () => {
 
       <div className="footer-item">
         <img src="./navBarIcons/tracking.png" alt="Description of the image" />
-        <div>Tracking </div>
+        <div>איתור הזמנה </div>
       </div>
       <div className="footer-item">
         <img src="./navBarIcons/message.png" alt="Description of the image" />
-        <div>Notifications </div>
+        <div>הודעות </div>
       </div>
       <div className="footer-item">
         <img
           src="./navBarIcons/shopping_cart.png"
           alt="Description of the image"
         />
-        <div>Store </div>
+        <div>עגלת קניות </div>
       </div>
 
       <div className="footer-item">
         <img src="./navBarIcons/person.png" alt="Description of the image" />
-        <div>User </div>
+        <div>התחברות משתמש </div>
       </div>
     </div>
   );

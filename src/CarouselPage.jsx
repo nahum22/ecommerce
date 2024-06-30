@@ -4,7 +4,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "./styles/carousale.css";
 const CarouselPage = () => {
   return (
-    <Carousel infiniteLoop autoPlay interval={800}>
+    <Carousel infiniteLoop autoPlay interval={2000}>
       <div>
         <img src="https://placehold.co/100x100" />
         <p className="legend">Legend 1</p>

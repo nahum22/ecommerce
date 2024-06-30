@@ -8,6 +8,10 @@
   background: linear-gradient(to right, #e0e0e0, grey, #ffffff, grey);
 }
 
+.carousel-slider {
+  box-shadow: 3px 3px 3px #f2af26;
+}
+
 .carousel {
   max-width: 800px;
 }
