@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Admin />} />
+        <Route path="/" element={<LandingPage />} />
         {/* 
           <Route path="/DisplayMacbooks" element={<DisplayMacbooks />} />
           <Route path="/Update/:MacbookId" element={<Update />} />
