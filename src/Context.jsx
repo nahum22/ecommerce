@@ -15,7 +15,19 @@ export const AppProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(null);
 
-  const handleGoogleSignIn = async () => {
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const loginWithGoogle = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
       await firebase.auth().signInWithPopup(provider);
@@ -101,7 +113,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-
   const addProduct = (product) => {
     const newProduct = {
       id: createProductId(),
@@ -127,10 +138,12 @@ export const AppProvider = ({ children }) => {
       value={{
         error,
         loading,
+        user,
         addProduct,
         handleAddProduct,
         handleUpdate,
         handleDelete,
+        loginWithGoogle,
         products,
         categories,
       }}
