@@ -11,19 +11,56 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [ProductsData, setProductsData] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [user, setUser] = useState(null);
 
-  // Fetching the Products from mock API
+  const handleGoogleSignIn = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await firebase.auth().signInWithPopup(provider);
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
 
-  // Adding Product to API
-  const handleAddProduct = async (Product) => {
+  const handleSignOut = async () => {
+    try {
+      await firebase.auth().signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  useEffect(() => {
+    const dbRef = firebase.database().ref("products");
+    dbRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      const dataArray = Object.entries(data || {}).map(([key, value]) => ({
+        id: key,
+        ...value,
+      }));
+
+      setProducts(dataArray);
+      getCategories();
+    });
+
+    // Cleanup function to disconnect listener when the component unmounts
+    return () => dbRef.off("value");
+  }, []);
+
+  useEffect(() => {
+    console.log(products);
+    getCategories();
+  }, [products]);
+
+  const handleAddProduct = async (product) => {
     setLoading(true);
     try {
-      const response = await axios.post(url, Product);
+      const response = await axios.post(url, product);
       toast.success("Successfully created!", {
         position: "top-center",
       });
-      //  setProductsData(response.data);
     } catch (error) {
       setError(error.message);
       toast.error(error.message, {
@@ -47,14 +84,11 @@ export const AppProvider = ({ children }) => {
 
       await itemRef.update(updatedValues);
       console.log("Item updated successfully");
-      // Optionally, refresh the products list after updating
-      fetchProducts();
     } catch (error) {
       console.error("Error updating item:", error);
     }
   };
 
-  // Delete Product to API
   const handleDelete = async (itemId) => {
     try {
       const dbRef = firebase.database().ref("products");
@@ -62,40 +96,43 @@ export const AppProvider = ({ children }) => {
 
       await itemRef.remove();
       console.log("Item removed successfully");
-      // Optionally, refresh the products list after deletion
-      //  fetchProducts();
     } catch (error) {
       console.error("Error removing item:", error);
     }
   };
 
-  // Create ID for Product based on last ID
-  const createProductId = () => {
-    const ProductIds = ProductsData.map((Product) => Product.id);
-    ProductIds.sort((a, b) => a - b);
-    const lastId = parseInt(ProductIds[ProductIds.length - 1]);
-    return lastId + 1;
-  };
 
-  // Adding a new Product to the data
-  const addProduct = (Product) => {
+  const addProduct = (product) => {
     const newProduct = {
       id: createProductId(),
-      ...Product,
+      ...product,
     };
     handleAddProduct(newProduct);
+  };
+
+  const getCategories = () => {
+    const result = {};
+    products.forEach((item) => {
+      if (result[item.categoryName]) {
+      } else {
+        result[item.categoryName] = 1;
+      }
+    });
+    console.log(Object.keys(result));
+    setCategories(Object.keys(result));
   };
 
   return (
     <AppContext.Provider
       value={{
-        ProductsData,
         error,
         loading,
         addProduct,
         handleAddProduct,
         handleUpdate,
         handleDelete,
+        products,
+        categories,
       }}
     >
       {children}

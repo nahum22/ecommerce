@@ -14,12 +14,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        {/* 
-          <Route path="/DisplayMacbooks" element={<DisplayMacbooks />} />
+        <Route path="/" element={<Admin />} />
+        {
+          <Route path="/store" element={<LandingPage />} />
+          /*
           <Route path="/Update/:MacbookId" element={<Update />} />
           <Route path="/addMacbook" element={<AddMacbook />} />
-        */}
+        */
+        }
         <></>
       </Routes>
     </Router>

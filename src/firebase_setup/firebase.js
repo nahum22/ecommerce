@@ -28,13 +28,6 @@ const handleGoogleSignIn = async () => {
   }
 };
 
-
-
-
-
-
-
-
 const handleSignOut = async () => {
   try {
     await firebase.auth().signOut();
@@ -61,5 +54,4 @@ if (!firebase.apps.length) {
 } else {
   firebase.app(); // If already initialized, use that one
 }
-console.log(db);
-export { db,handleGoogleSignIn };
+export { db, handleGoogleSignIn };

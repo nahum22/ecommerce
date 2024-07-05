@@ -4,6 +4,7 @@ import "firebase/compat/database";
 import "firebase/compat/storage";
 import "firebase/compat/auth";
 import "./firebase_setup/firebase.js";
+import "./styles/LandingPage.css";
 import { useGlobalContext } from "./Context";
 import {
   AppBar,
@@ -183,11 +184,16 @@ const Admin = () => {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Admin
           </Typography>
+          <Typography variant="h6" style={{ marginRight: "20px" }}>
+            <a href="/store"> Back To Store</a>
+          </Typography>
+
           {user ? (
             <>
               <Typography variant="h6" style={{ marginRight: "20px" }}>
                 Welcome, {user.displayName}
               </Typography>
+
               <Button color="inherit" onClick={handleSignOut}>
                 Sign Out
               </Button>

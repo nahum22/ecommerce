@@ -1,0 +1,10 @@
+.productCard {
+}
+
+.productCard img {
+  width: 300px;
+}
+
+.productsContainer {
+  display: flex;
+}
