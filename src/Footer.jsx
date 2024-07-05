@@ -1,7 +1,9 @@
 import React from "react";
 
 import "./styles/footer.css";
+import { useGlobalContext } from "./Context";
 const Footer = () => {
+  const { user, loginWithGoogle, logout } = useGlobalContext();
   return (
     <div className="footer">
       <div className="footer-item">
@@ -27,6 +29,15 @@ const Footer = () => {
         />
         <div>עגלת קניות </div>
       </div>
+
+      {user ? (
+        <>
+          <span>Logged in as {user.displayName}</span>
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <button onClick={loginWithGoogle}>Login with Google</button>
+      )}
 
       <div className="footer-item">
         <img src="./navBarIcons/person.png" alt="Description of the image" />

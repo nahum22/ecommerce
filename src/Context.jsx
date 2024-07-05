@@ -14,6 +14,28 @@ export const AppProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+
+  const fetchFavorites = (userId) => {
+    if (!user) return; // Ensure the user is authenticated
+    const db = firebase.database();
+    db.ref(`favorites/${userId}`)
+      .once("value") // Use once instead of on to avoid memory leaks
+      .then((snapshot) => {
+        const favs = [];
+        snapshot.forEach((childSnapshot) => {
+          favs.push({
+            id: childSnapshot.key,
+            productId: childSnapshot.val().productId,
+            ...childSnapshot.val(),
+          });
+        });
+        setFavorites(favs);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch favorites:", error);
+      });
+  };
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -36,12 +58,17 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await firebase.auth().signOut();
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
+  const logout = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        setUser(null); // Assuming setUser is defined somewhere in your context or component
+        setFavorites([]);
+      })
+      .catch((error) => {
+        console.error("Error during sign out:", error);
+      });
   };
 
   useEffect(() => {
